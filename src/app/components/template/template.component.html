@@ -1,0 +1,111 @@
+<mat-toolbar color="primary">
+        <button mat-icon-button (click)="sidenav.toggle()" matTooltip="Menu">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <span>LostDocFinder</span>
+        <span class="toolbar-item-spacer"></span>
+        @if(isLogin)
+        {
+        <button mat-icon-button matTooltip="Like">
+            <mat-icon>favorite</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Share">
+            <mat-icon>share</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Notifications">
+            <mat-icon>notifications</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="My Account" [matMenuTriggerFor]="userAccountMenu">
+            <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #userAccountMenu [overlapTrigger]="false" yPosition="below">
+            <button mat-menu-item routerLink="#">
+                <mat-icon>person</mat-icon><span>My Account</span>
+            </button>
+            <button mat-menu-item routerLink="#">
+                <mat-icon>settings</mat-icon><span>Settings</span>
+            </button>
+            <button mat-menu-item routerLink="#">
+                <mat-icon>help</mat-icon><span>Help</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item routerLink="/logout"
+            routerLinkActive="active" 
+            ariaCurrentWhenActive="page"
+            >
+                <mat-icon>exit_to_app</mat-icon>Logout
+            </button>
+        </mat-menu>
+        }
+    </mat-toolbar>
+    
+    <mat-sidenav-container class="app-container">
+        <mat-sidenav #sidenav mode="side" [class.mat-elevation-z4]="true" class="app-sidenav">
+            <mat-nav-list>
+                @if(!isLogin)
+                {
+                <a mat-list-item routerLink="/home">
+                        <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="home"></mat-icon>
+                        Home
+                </a>
+                }@else {
+                    <a mat-list-item routerLink="/dashboard">
+                        <mat-icon aria-hidden="false" aria-label="Dashboard" fontIcon="dashboard"></mat-icon>
+                        Dashboard
+                    </a>
+                }
+                @if(!isLogin)
+                {
+                <mat-expansion-panel [class.mat-elevation-z0]="true">
+                    <mat-expansion-panel-header>
+                        Login Or SignUp 
+                    </mat-expansion-panel-header>
+                    <mat-nav-list>
+                        <a mat-list-item routerLink="/login"
+                        routerLinkActive="active" 
+                        ariaCurrentWhenActive="page"
+                        >
+                            <mat-icon>login</mat-icon><span>Login</span>
+                        </a>
+                        <a mat-list-item routerLink="/register"
+                        routerLinkActive="active" 
+                        ariaCurrentWhenActive="page"
+                        >
+                            <mat-icon>perm_identity</mat-icon>
+                            <span>SignUp</span>
+                        </a>
+                    </mat-nav-list>
+                </mat-expansion-panel>
+                }
+                @else {
+                    <mat-expansion-panel [class.mat-elevation-z0]="true">
+                        <mat-expansion-panel-header>
+                            handle documents
+                        </mat-expansion-panel-header>
+                        <mat-nav-list>
+                            <a mat-list-item routerLink="#">add document</a>
+                            <a mat-list-item routerLink="#">view documents</a>
+                        </mat-nav-list>
+                    </mat-expansion-panel>
+                    <mat-expansion-panel [class.mat-elevation-z0]="true">
+                        <mat-expansion-panel-header>
+                            handle requets
+                        </mat-expansion-panel-header>
+                        <mat-nav-list>
+                            <a mat-list-item routerLink="#">add request</a>
+                            <a mat-list-item routerLink="#">view requets</a>
+                        </mat-nav-list>
+
+                    </mat-expansion-panel>
+                }
+               
+            </mat-nav-list>
+        </mat-sidenav>
+        <mat-sidenav-content>
+            <router-outlet>
+                <div class="app-sidenav-content">
+                        <router-outlet></router-outlet>
+                </div>
+            </router-outlet>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
