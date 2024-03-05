@@ -1,0 +1,42 @@
+@if (!isLogingSigComp())
+{
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+        <label for="username">username</label>
+        <input 
+            formControlName="username"
+            id="username" 
+            type="text" 
+            class="form-control"
+        >
+    </div>
+    
+    <div class="form-group">
+        <label for="password">password</label>
+        <input 
+            formControlName="password"
+            id="password" 
+            type="text" 
+            class="form-control"
+        >
+    </div>
+     <!-- Display error message for server-side error -->
+    <button class="btn btn-primary" [disabled]="loginForm.invalid" type="submit">
+        @if(isSavingSigComp())
+        {
+        <div  class="loader"> loading content </div>
+        }
+        @else {
+        @if(serverError)
+        {
+        <div >
+            <small class="text-danger">{{ serverError }}</small>
+        </div>
+        }
+        <span>
+            Sign In 
+        </span>
+        }
+    </button>
+</form>
+}

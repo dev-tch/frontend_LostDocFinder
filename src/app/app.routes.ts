@@ -1,14 +1,37 @@
 import { Routes } from '@angular/router';
-import {RegisterComponent} from './components/register/register.component';
-import {LoginComponent} from './components/login/login.component';
-import { HomeComponent } from './components/home/home.component';
-import { LogoutComponent } from './components/logout/logout.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { NotFoundPageComponent } from "./web-pages/not-found-page/not-found-page.component";
 export const routes: Routes = [
-     {path: 'home', component: HomeComponent },
-     { path: 'register', component: RegisterComponent },
-     { path: 'login', component: LoginComponent },
-     { path: 'logout', component: LogoutComponent },
-     { path: 'dashboard', component: DashboardComponent },
-     { path: '',   redirectTo: '/home', pathMatch: 'full' }
-]; 
+  {
+    path: '',
+    redirectTo: '/home',
+    pathMatch: 'full',
+  },
+  {
+    path: 'home',
+    loadComponent: () => import('./web-pages/home-page/home-page.component').then(c => c.HomePageComponent)
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./web-pages/register-page/register-page.component').then(c => c.RegisterPageComponent)
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./web-pages/login-page/login-page.component').then(c => c.LoginPageComponent)
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./web-pages/dashboard-page/dashboard-page.component').then(c => c.DashboardPageComponent)
+  },
+  {
+    path: 'logout',
+    loadComponent: () => import('./web-pages/logout-page/logout-page.component').then(c => c.LogoutPageComponent)
+  },
+  {
+    path: '404',
+    component: NotFoundPageComponent,
+  },
+  {
+    path: '**',
+    component: NotFoundPageComponent,
+  }
+];
