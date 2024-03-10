@@ -20,13 +20,19 @@
     </button>
     <mat-menu #userAccountMenu [overlapTrigger]="false" yPosition="below">
         <button mat-menu-item routerLink="#">
-            <mat-icon>person</mat-icon><span>My Account</span>
-        </button>
-        <button mat-menu-item routerLink="#">
-            <mat-icon>settings</mat-icon><span>Settings</span>
-        </button>
-        <button mat-menu-item routerLink="#">
-            <mat-icon>help</mat-icon><span>Help</span>
+            <mat-icon>person</mat-icon>
+            @if(usernameSigComp())
+            {
+                <span>
+                {{usernameSigComp()}}
+                </span> 
+            }
+            @else {
+                <span>
+                My Account
+                </span>
+            }
+            
         </button>
         <mat-divider></mat-divider>
         <button mat-menu-item routerLink="/logout"
@@ -83,8 +89,14 @@
                         handle documents
                     </mat-expansion-panel-header>
                     <mat-nav-list>
-                        <a mat-list-item routerLink="#">add document</a>
-                        <a mat-list-item routerLink="#">view documents</a>
+                        <a mat-list-item routerLink="/addDoc"
+                        routerLinkActive="active" 
+                        ariaCurrentWhenActive="page"
+                        >add document</a>
+                        <a mat-list-item routerLink="/viewDoc"
+                        routerLinkActive="active" 
+                        ariaCurrentWhenActive="page"
+                        >view documents</a>
                     </mat-nav-list>
                 </mat-expansion-panel>
                 <mat-expansion-panel [class.mat-elevation-z0]="true">
@@ -92,8 +104,14 @@
                         handle requets
                     </mat-expansion-panel-header>
                     <mat-nav-list>
-                        <a mat-list-item routerLink="#">add request</a>
-                        <a mat-list-item routerLink="#">view requets</a>
+                        <a mat-list-item routerLink="/addReq"
+                        routerLinkActive="active" 
+                        ariaCurrentWhenActive="page"
+                        >add request</a>
+                        <a mat-list-item routerLink="/viewReq"
+                        routerLinkActive="active" 
+                        ariaCurrentWhenActive="page"
+                        >view requets</a>
                     </mat-nav-list>
 
                 </mat-expansion-panel>

@@ -34,7 +34,8 @@ ngOnInit(): void
             }
             else{
                 this.router.navigate(['/home']);
-                this.local_s.clearLocalStoarge();
+                this.local_s.clearLogin('user');
+                this.local_s.removeUserName('username');
             }
         }
     }

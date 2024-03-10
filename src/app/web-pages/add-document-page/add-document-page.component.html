@@ -1,0 +1,44 @@
+<form class="example-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+<mat-form-field class="example-full-width">
+    <mat-label>document Identity</mat-label>
+    <input matInput placeholder="Ex. 0978456123" value="" formControlName="doc_id">
+</mat-form-field>
+<mat-form-field >
+    <mat-label>Select type of document (required)</mat-label>
+    <select matNativeControl required  formControlName="doc_type">
+      <option label="--select something --"></option>
+      <option value="bankDoc">Banck Card</option>
+      <option value="cinDoc">National Identity Card</option>
+      <option value="passDoc">Passport</option>
+      <option value="drivDoc">driver's license</option>
+    </select>
+    @if (doc_type.hasError('required')) {
+      <mat-error>This field is required</mat-error>
+    }
+  </mat-form-field>
+  <mat-form-field class="example-full-width" >
+    <mat-label>add description </mat-label>
+    <textarea matInput placeholder="more infos about doc: issue daten, expiration ..." formControlName="doc_description"></textarea>
+  </mat-form-field>
+  <button mat-flat-button color="primary" [disabled]="form.invalid"  type="submit"> 
+    @if(isSavingSigComp())
+    {
+    <div  class="loader"> loading content </div>
+    }
+    @else {
+        Submit 
+    }
+ </button>
+</form>
+
+@if(serverError)
+{
+<div >
+    <small class="text-danger">{{ serverError }}</small>
+</div>
+}
+@if(serverMsg)
+{ <div >
+    <small class="text-success">{{ serverMsg }}</small>
+</div>
+}

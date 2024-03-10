@@ -27,6 +27,22 @@ export const routes: Routes = [
     loadComponent: () => import('./web-pages/logout-page/logout-page.component').then(c => c.LogoutPageComponent)
   },
   {
+    path: 'addDoc',
+    loadComponent: () => import('./web-pages/add-document-page/add-document-page.component').then(c => c.addDocumentPageComponent)
+  },
+  {
+    path: 'viewDoc',
+    loadComponent: () => import('./web-pages/view-document-page/view-document-page.component').then(c => c.ViewDocumentPageComponent)
+  },
+  {
+    path: 'addReq',
+    loadComponent: () => import('./web-pages/add-request-page/add-request-page.component').then(c => c.AddRequestPageComponent)
+  },
+  {
+    path: 'viewReq',
+    loadComponent: () => import('./web-pages/view-request-page/view-request-page.component').then(c => c.ViewRequestPageComponent)
+  },
+  {
     path: '404',
     component: NotFoundPageComponent,
   },

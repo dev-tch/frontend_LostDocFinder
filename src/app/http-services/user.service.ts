@@ -2,20 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient} from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { AlertDialogComponent } from '../notification-tools/alert-dialog/alert-dialog.component';
-import {MatDialog} from '@angular/material/dialog';
 import {signal} from '@angular/core';
 import { LocalService } from '../storage-services/local.service';
-import { RegisterForm } from '../data-models/form.model';
+import { DocForm, RegisterForm, ReqForm, apiResponse } from '../data-models/form.model';
 import { LoginForm } from '../data-models/form.model';
-import { ApiToken } from '../data-models/respone.model';
+import { Contact } from '../data-models/form.model';
+import { ApiToken } from '../data-models/form.model';
 import { PLATFORM_ID } from '@angular/core';
 import { Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AxiosService } from './axios.service';
-import { EMPTY, catchError } from 'rxjs';
+import { EMPTY, catchError,map} from 'rxjs';
+import { Observable , of} from 'rxjs';
 
-//import { error } from 'console';
 const API_URL = environment.apiUrl;
 @Injectable({
   providedIn: 'root'
@@ -24,24 +23,30 @@ export class UserService  {
     public isLoginSig      = signal(false);
     public isRegistredSig  = signal(false);
     public isSavingSig     = signal(false);
+    public usernameSig     = signal("");
+    public documents: DocForm[] = [];
     constructor(@Inject(PLATFORM_ID) private platformId: Object,
-                private dialog: MatDialog, private http: HttpClient,
+                private http: HttpClient,
                 private local_s: LocalService,
                 private axiosService: AxiosService
                 )
     {
         if (isPlatformBrowser(this.platformId)) {
-            if (this.local_s.load('user') == true )
+            console.log("enter condition of platerforme" + this.local_s.load('user'))
+            if (this.local_s.load('user') )
             {
-                //console.log("*************value true");
-                //this.local_s.save('user', true, 1200 );
                 this.isLoginSig.set(true);
+                this.usernameSig.set(this.local_s.getUserName('username'));
             }
             else if (this.isLoginSig() ==  true)
             {
                 this.local_s.save('user', this.isLoginSig() , 1200 );
             }
-        }
+           else {
+             console.log("user not connected !!");
+             this.isLoginSig.set(false);
+           }
+       }
 
     }
     /**
@@ -49,10 +54,11 @@ export class UserService  {
      */
     postRegister(formObj : RegisterForm)
     {
+        
         const formData = new URLSearchParams();
         this.fillDataSignup(formData, formObj);
-        return this.http.post(API_URL + "/api/users", /*formParams.toString()*/formData.toString(),
-        {
+        return this.http.post(API_URL + "/api/users", formData.toString(),
+       {
             headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
         }
         ).subscribe(
@@ -75,25 +81,15 @@ export class UserService  {
      *  method to log in user
      */
     postLogin(formObj: LoginForm) {
-        this.axiosService.get<any>('/sanctum/csrf-cookie')
-        .pipe(
-            catchError(error => {
-            console.error(error);
-            console.log('An error occurred while asking CSRF token .');
-            this.isSavingSig.set(false);
-            return EMPTY; // Return an empty observable to complete immediately
-            })
-        )
-        .subscribe(data => {
-            console.log(data);
-            // Handle successful response
-        });
-
         /*asking for loging with the geneated session cookie*/
         const formData = new URLSearchParams();
         this.fillDataLogin(formData, formObj);
-        this.axiosService.post<any>('/api/login', formData.toString())
+        this.axiosService.post<ApiToken>('/api/login', formData.toString())
         .pipe(
+            map((data: ApiToken) => {
+                sessionStorage.setItem('token', data.access_token);
+                this.usernameSig.set(data.username);
+            }),
             catchError(error => {
             console.error(error);
             console.log('An error occurred while trying to login .');
@@ -115,6 +111,7 @@ export class UserService  {
     {
         this.axiosService.post<any>('/api/logout', '')
         .pipe(
+            
             catchError(error => {
             console.error(error);
             console.log('An error occurred while trying to login .');
@@ -124,10 +121,266 @@ export class UserService  {
         )
         .subscribe(data => {
             console.log(data);
+            this.local_s.removeUserName('token');
             this.isLoginSig.set(false);
             this.isSavingSig.set(false);
             // Handle successful response
         });
+    }
+    createDocument(formObj: DocForm):Observable<apiResponse>
+    {
+        const formData = new URLSearchParams();
+        this.fillDataDoc(formData, formObj);
+        return this.axiosService.post<apiResponse>('/api/addDoc', formData.toString())
+        .pipe(
+            map((data: apiResponse) => {
+                console.log(data);
+                this.isSavingSig.set(false);
+                return data;
+            }),
+            catchError(error => {
+                console.error(error);
+                console.log('An error occurred while trying to create document');
+                this.isSavingSig.set(false);
+                const data:apiResponse = {error: "An error occurred while trying to create document", message: ""}
+                return of(data);           
+            })
+        )
+    }
+    getDocuments():Observable<DocForm[]>
+    {
+        console.log("enter service  get documents");
+        return this.axiosService.get<DocForm[]>('/api/documents')
+        .pipe(
+            map((data: DocForm[]) => {
+                console.log(data);
+                console.log("map  data get documents");
+                this.isSavingSig.set(false);
+                return data;
+            }),
+            catchError(error => {
+                console.error(error);
+                console.log('An error occurred while trying to get documents');
+                this.isSavingSig.set(false);
+                //return EMPTY; // Return an empty observable to complete immediately
+                //const data:apiResponse = {error: "An error occurred while trying to create document", message: ""}
+                return EMPTY;           
+            })
+        )
+    }
+
+    createRequest(formObj: ReqForm):Observable<apiResponse>
+    {
+        const formData = new URLSearchParams();
+        this.fillDataReq(formData, formObj);
+        return this.axiosService.post<apiResponse>('/api/addReq', formData.toString())
+        .pipe(
+            map((data: apiResponse) => {
+                console.log(data);
+                this.isSavingSig.set(false);
+                return data;
+            }),
+            catchError(error => {
+                console.error(error);
+                console.log('An error occurred while trying to create Request');
+                this.isSavingSig.set(false);
+                //return EMPTY; // Return an empty observable to complete immediately
+                const data:apiResponse = {error: "An error occurred while trying to create Request", message: ""}
+                return of(data);           
+            })
+        )
+    }
+
+    getRequests():Observable<ReqForm[]>
+    {
+        console.log("==> Enter service  get requests");
+        return this.axiosService.get<ReqForm[]>('/api/requests')
+        .pipe(
+            map((data: ReqForm[]) => {
+                console.log(data);
+                console.log("map  data get requests");
+                this.isSavingSig.set(false);
+                return data;
+            }),
+            catchError(error => {
+                console.error(error);
+                console.log('An error occurred while trying to get requests');
+                this.isSavingSig.set(false);
+                //return EMPTY; // Return an empty observable to complete immediately
+                //const data:apiResponse = {error: "An error occurred while trying to create document", message: ""}
+                return EMPTY;           
+            })
+        )
+    }
+
+    getcontacts(obj: ReqForm):Observable<Contact>
+    {
+        console.log("===========" + obj);
+        console.log("==> Enter service  get requests");
+        const formData = new URLSearchParams();
+        this.fillDataReq(formData, obj);
+        console.log("========255");
+        for (const pair of formData.entries()) {
+            const [key, value] = pair;
+            console.log(`Parameter: ${key}, Value: ${value}`);
+        }
+        return this.axiosService.post<Contact>('/api/contacts', formData.toString())
+        .pipe(
+            map((data: Contact) => {
+                console.log(data);
+                console.log("map  data get requests");
+                this.isSavingSig.set(false);
+                return data;
+            }),
+            catchError(error => {
+                console.error(error);
+                console.log('An error occurred while trying to get requests');
+                this.isSavingSig.set(false);
+                //return EMPTY; // Return an empty observable to complete immediately
+                //const data:apiResponse = {error: "An error occurred while trying to create document", message: ""}
+                return EMPTY;           
+            })
+        )
+    }
+    deleteDocument(obj: DocForm): Observable<apiResponse>{
+        const formData = new URLSearchParams();
+        this.fillDataDoc(formData, obj);
+        console.log("before view formatda");
+        const entriesArray = Array.from(formData.entries());
+        console.log(entriesArray);
+        console.log("after view formdata");
+        return this.axiosService.delete<apiResponse>('/api/documents', formData.toString())
+        .pipe(
+            map((data: apiResponse) => {
+                console.log(data);
+                console.log("map  data get requests");
+                this.isSavingSig.set(false);
+                return data;
+            }),
+            catchError(error => {
+                console.error(error);
+                console.log('An error occurred while trying to  delet  document');
+                this.isSavingSig.set(false);
+                //return EMPTY; // Return an empty observable to complete immediately
+                //const data:apiResponse = {error: "An error occurred while trying to create document", message: ""}
+                //return EMPTY;   
+                const data:apiResponse = {error: "Document Not Found! ", message: ""}
+                return of(data);         
+            })
+        )
+    }
+    updateDocument(obj:DocForm , id_doc: string): Observable<apiResponse>{
+        const formData = new URLSearchParams();
+        this.fillDataDoc(formData, obj);
+        //formData.append('doc_description', description);
+        console.log("before view formatda");
+        const entriesArray = Array.from(formData.entries());
+        console.log(entriesArray);
+        console.log("after view formdata");
+
+        return this.axiosService.update<apiResponse>('/api/documents/'+id_doc, formData.toString())
+        .pipe(
+            map((data: apiResponse) => {
+                console.log(data);
+                console.log("map  data get requests");
+                this.isSavingSig.set(false);
+                return data;
+            }),
+            catchError(error => {
+                console.error(error);
+                console.log('An error occurred while trying to  update  document');
+                this.isSavingSig.set(false);
+                //return EMPTY; // Return an empty observable to complete immediately
+                //const data:apiResponse = {error: "An error occurred while trying to create document", message: ""}
+                //return EMPTY;   
+                const data:apiResponse = {error: "Document Not Found! ", message: ""}
+                return of(data);         
+            })
+        )
+    }
+    deleteRequest(obj: ReqForm): Observable<apiResponse>{
+        const formData = new URLSearchParams();
+        this.fillDataReq(formData, obj);
+        console.log("before view formatda");
+        const entriesArray = Array.from(formData.entries());
+        console.log(entriesArray);
+        console.log("after view formdata");
+        return this.axiosService.delete<apiResponse>('/api/requests', formData.toString())
+        .pipe(
+            map((data: apiResponse) => {
+                console.log(data);
+                console.log("map Response delete Request");
+                this.isSavingSig.set(false);
+                return data;
+            }),
+            catchError(error => {
+                console.error(error);
+                console.log('An error occurred while trying to  delet  Request');
+                this.isSavingSig.set(false);
+                //return EMPTY; // Return an empty observable to complete immediately
+                //const data:apiResponse = {error: "An error occurred while trying to create document", message: ""}
+                //return EMPTY;   
+                const data:apiResponse = {error: "Request Not Found! ", message: ""}
+                return of(data);         
+            })
+        )
+    }
+
+    updateRequest(obj:ReqForm , id_req: number): Observable<apiResponse>{
+        const formData = new URLSearchParams();
+        this.fillDataReq(formData, obj);
+        //formData.append('doc_description', description);
+        console.log("before view formatda");
+        const entriesArray = Array.from(formData.entries());
+        console.log(entriesArray);
+        console.log("after view formdata");
+
+        return this.axiosService.update<apiResponse>('/api/requests/'+id_req, formData.toString())
+        .pipe(
+            map((data: apiResponse) => {
+                console.log(data);
+                console.log("map  data update Request");
+                this.isSavingSig.set(false);
+                return data;
+            }),
+            catchError(error => {
+                console.error(error);
+                console.log('An error occurred while trying to  update  Request');
+                this.isSavingSig.set(false);
+                //return EMPTY; // Return an empty observable to complete immediately
+                //const data:apiResponse = {error: "An error occurred while trying to create document", message: ""}
+                //return EMPTY;   
+                const data:apiResponse = {error: "Request Not Found! ", message: ""}
+                return of(data);         
+            })
+        )
+    }
+    getDocInfo(obj: ReqForm):Observable<apiResponse>
+    {
+        const formData = new URLSearchParams();
+        this.fillDataReq(formData, obj);
+        for (const pair of formData.entries()) {
+            const [key, value] = pair;
+            console.log(`Parameter: ${key}, Value: ${value}`);
+        }
+        return this.axiosService.post<apiResponse>('/api/documents/description', formData.toString())
+        .pipe(
+            map((data: apiResponse) => {
+                console.log(data);
+                console.log("map  data get Doc info");
+                this.isSavingSig.set(false);
+                return data;
+            }),
+            catchError(error => {
+                console.error(error);
+                console.log('An error occurred while trying to get doc info');
+                this.isSavingSig.set(false);
+                //return EMPTY; // Return an empty observable to complete immediately
+                //const data:apiResponse = {error: "An error occurred while trying to create document", message: ""}
+                const data:apiResponse = {error: "document description not found!", message: ""}
+                return of(data);          
+            })
+        )
     }
     /********************
      *  helper methods 
@@ -138,6 +391,16 @@ export class UserService  {
         }
     }
     fillDataLogin(formData: URLSearchParams, formObj:LoginForm){
+        for (const [k, v] of Object.entries(formObj)) {
+            formData.set(k, v);
+        }
+    }
+    fillDataDoc(formData: URLSearchParams, formObj:DocForm){
+        for (const [k, v] of Object.entries(formObj)) {
+            formData.set(k, v);
+        }
+    }
+    fillDataReq(formData: URLSearchParams, formObj:ReqForm){
         for (const [k, v] of Object.entries(formObj)) {
             formData.set(k, v);
         }

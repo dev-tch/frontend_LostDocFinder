@@ -8,38 +8,38 @@ export class LocalService {
   constructor() {   }
 
 
-  public saveToken(key: string, value: string) {
-    localStorage.setItem(key, value);
+  public saveUserName(key: string, value: string) {
+    sessionStorage.setItem(key, value);
   }
-  public getToken(key: string) :string{
-    return localStorage.getItem(key)!;
+  public getUserName(key: string) :string{
+    return sessionStorage.getItem(key)!;
   }
-  public removeToken(key: string) {
-    localStorage.removeItem(key);
+  public removeUserName(key: string) {
+    sessionStorage.removeItem(key);
   }
-  public clearLocalStoarge() {
-    localStorage.clear();
+  public clearLogin(key: string) {
+    sessionStorage.removeItem(key);
   }
   
   save(key: string, data: boolean, cacheMinutes: number): void {
     const expires = new Date().getTime() + cacheMinutes * 60000;
     const record = { 'isLogin': data, expires };
-    localStorage.setItem(key, JSON.stringify(record));
+    sessionStorage.setItem(key, JSON.stringify(record));
   }
 
   load(key: string): boolean {
-    const item = localStorage.getItem(key);
+    const item = sessionStorage.getItem(key);
     if (!item) return false;
 
     const record = JSON.parse(item);
     const now = new Date().getTime();
     if (now > record.expires) {
-      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
       return false;
     }
     return record['isLogin']
   }
   public remove(key: string) {
-    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
   }
 }

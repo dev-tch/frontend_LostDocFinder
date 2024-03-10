@@ -1,0 +1,57 @@
+<form class="example-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field class="example-full-width">
+        <mat-label>document Identity</mat-label>
+        <input matInput placeholder="Ex. 0978456123" value="" formControlName="doc_id">
+    </mat-form-field>
+
+    <mat-form-field >
+        <mat-label>type of document (required)</mat-label>
+        <select matNativeControl required  formControlName="doc_type">
+        <option label="--select something --"></option>
+        <option value="bankDoc">Banck Card</option>
+        <option value="cinDoc">National Identity Card</option>
+        <option value="passDoc">Passport</option>
+        <option value="drivDoc">driver's license</option>
+        </select>
+        @if (doc_type.hasError('required')) {
+        <mat-error>This field is required</mat-error>
+        }
+    </mat-form-field>
+
+    <mat-form-field >
+        <mat-label>type of request (required)</mat-label>
+        <select matNativeControl required  formControlName="req_type">
+            <option label="--select something --"></option>
+            <option value="doc_found">document is found</option>
+            <option value="doc_lost">my document is lost</option>
+        </select>
+        @if (req_type.hasError('required')) {
+            <mat-error>This field is required</mat-error>
+        }
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width" >
+    <mat-label>add description of request </mat-label>
+    <textarea matInput placeholder="more infos   to recover the document" formControlName="req_description"></textarea>
+    </mat-form-field>
+    <button mat-flat-button color="primary" [disabled]="form.invalid"  type="submit"> 
+        @if(isSavingSigComp())
+        {
+        <div  class="loader"> loading content </div>
+        }
+        @else {
+            Submit 
+        }
+    </button>
+</form>
+@if(serverError)
+{
+<div >
+    <small class="text-danger">{{ serverError }}</small>
+</div>
+}
+@if(serverMsg)
+{ <div >
+    <small class="text-success">{{ serverMsg }}</small>
+</div>
+}

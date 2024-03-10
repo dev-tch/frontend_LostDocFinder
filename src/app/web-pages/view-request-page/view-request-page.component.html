@@ -1,0 +1,130 @@
+<div class = "flex-container">
+<div class="mat-elevation-z8" >
+    <table mat-table [dataSource]="dataSource">
+  
+      <!-- doc_id Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> id </th>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      </ng-container>
+
+      <!-- doc_id Column -->
+      <ng-container matColumnDef="doc_id">
+        <th mat-header-cell *matHeaderCellDef> document identity </th>
+        <td mat-cell *matCellDef="let element"> {{element.doc_id}} </td>
+      </ng-container>
+  
+      <!-- doc_type Column -->
+      <ng-container matColumnDef="doc_type">
+        <th mat-header-cell *matHeaderCellDef> document type </th>
+        <td mat-cell *matCellDef="let element"> {{element.doc_type}} </td>
+      </ng-container>
+      <!-- req_type Column -->
+      <ng-container matColumnDef="req_type">
+        <th mat-header-cell *matHeaderCellDef> Request type </th>
+        <td mat-cell *matCellDef="let element"> {{element.req_type}} </td>
+      </ng-container>
+
+    <!-- req_status Column -->
+    <ng-container matColumnDef="req_status">
+    <th mat-header-cell *matHeaderCellDef> status of request</th>
+    <td mat-cell *matCellDef="let element"> {{element.req_status}} </td>
+    </ng-container>
+
+     <!-- button Column -->
+     <ng-container matColumnDef="contact">
+        <th mat-header-cell *matHeaderCellDef> contact</th>
+        <td mat-cell *matCellDef="let element"> 
+            @if(element.req_status.startsWith("Responded"))
+            {
+                <button class="btn btn-primary" (click)="viewContact(element)" type="submit">
+                @if(element.req_type == "doc_found")
+                {
+                    OwnerContact
+                }@else{
+                    FinderContact
+                } 
+                </button>
+            }
+            @else {
+                <span> No contact</span>
+            }
+        </td>
+    </ng-container>
+     <!-- button Delete  Column -->
+     <ng-container matColumnDef="Delete">
+    <th mat-header-cell *matHeaderCellDef> Delete</th>
+    <td mat-cell *matCellDef="let element"> 
+        <button class="btn btn-primary"  (click)="deleteRequest(element)"   type="submit">delete</button>
+    </td>
+    </ng-container>
+       <!-- view update  document Column -->
+    <ng-container matColumnDef="Info">
+        <th mat-header-cell *matHeaderCellDef> Info</th>
+        <td mat-cell *matCellDef="let element"> 
+            <button class="btn btn-primary"  (click)="updateReqdescription(element)"   type="submit">Info</button>
+        </td>
+    </ng-container>
+    <!--
+        doc info column 
+    -->
+    <ng-container matColumnDef="doc">
+        <th mat-header-cell *matHeaderCellDef> doc</th>
+        <td mat-cell *matCellDef="let element"> 
+            <button class="btn btn-primary"  (click)="viewDocInfo(element)"   type="submit">doc</button>
+        </td>
+    </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                   showFirstLastButtons
+                   aria-label="Select page of periodic elements">
+    </mat-paginator>
+  </div>
+@if(this.showInfo)
+{
+    <mat-card>
+        <mat-card-header>
+          <mat-card-title>Container Transaction</mat-card-title>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <br/>
+        <mat-card-content>
+            @if(this.updatereq)
+            {
+                <h3> current description Request: </h3>
+                <p>{{description}}</p>
+               <form class="example-form" [formGroup]="form" (ngSubmit)="onSubmitUpdateReq()">
+                <!--  <mat-form-field class="example-full-width" >
+                        <mat-label>new  description </mat-label> -->
+                        
+                        <textarea  formControlName="req_description" >  </textarea>
+                    <!--</mat-form-field> -->
+                    <button mat-button class="btn btn-primary"   type="submit"> submit</button>
+               </form>
+            }
+            @if(this.contact)
+            {
+            <p>email: {{this.contact.email}} <p>   
+            <p>phone: {{this.contact.phone}}</p>
+            <h2>Description: </h2>
+            <p> {{this.contact.description}}</p>
+            }
+            @if(this.serverResponse.message)
+            {
+            <small class="text-success">{{this.serverResponse.message}}</small>
+           
+            }
+            @if(this.serverResponse.error){
+                <small class="text-danger">{{this.serverResponse.error}}</small>
+            }
+          </mat-card-content>
+        <mat-card-actions>
+          <button mat-button class="btn btn-primary" (click)="hideInfo()" >Back</button>
+        </mat-card-actions>
+      </mat-card>
+}
+
+</div>

@@ -11,7 +11,6 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { UserService } from './http-services/user.service';
-import { LocalService } from './storage-services/local.service';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -34,24 +33,17 @@ import { LocalService } from './storage-services/local.service';
 export class AppComponent implements OnInit
 {
     public isLogingSigComp :Signal<boolean> ;
-    //public data_log: boolean = false;
+    public usernameSigComp :Signal<string> ;
 
-    constructor(private userService: UserService,
-                /*private local_s : LocalService*/
-                ) 
+    constructor(private userService: UserService) 
     {
-        this.isLogingSigComp = computed(() => userService.isLoginSig() && true  /*this.data_log */);
-       /* afterRender(
-            ()=> 
-            {
-                this.data_log = this.local_s.load('user');
-            }
-        )   */             
+        this.isLogingSigComp = computed(() => userService.isLoginSig() && true ); 
+        this.usernameSigComp = computed(() => userService.usernameSig());             
     }
     ngOnInit(): void {
         this.isLogingSigComp = computed(() => {
-            console.log('Status Login is ==> ' + (this.userService.isLoginSig()  && true /* this.data_log*/));
-            if (this.userService.isLoginSig() /* ||  this.data_log */) {
+            console.log('<AppComponent>:Status Login is ==> ' + (this.userService.isLoginSig()  && true));
+            if (this.userService.isLoginSig() ) {
                return true;
             } else {
                 return false;
