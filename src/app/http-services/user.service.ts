@@ -57,7 +57,7 @@ export class UserService  {
         
         const formData = new URLSearchParams();
         this.fillDataSignup(formData, formObj);
-        return this.http.post(API_URL + "/api/users", formData.toString(),
+        return this.http.post(API_URL + "/users", formData.toString(),
        {
             headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
         }
@@ -84,7 +84,7 @@ export class UserService  {
         /*asking for loging with the geneated session cookie*/
         const formData = new URLSearchParams();
         this.fillDataLogin(formData, formObj);
-        this.axiosService.post<ApiToken>('/api/login', formData.toString())
+        this.axiosService.post<ApiToken>('/login', formData.toString())
         .pipe(
             map((data: ApiToken) => {
                 sessionStorage.setItem('token', data.access_token);
@@ -109,7 +109,7 @@ export class UserService  {
      */
     postLogout()
     {
-        this.axiosService.post<any>('/api/logout', '')
+        this.axiosService.post<any>('/logout', '')
         .pipe(
             
             catchError(error => {
@@ -131,7 +131,7 @@ export class UserService  {
     {
         const formData = new URLSearchParams();
         this.fillDataDoc(formData, formObj);
-        return this.axiosService.post<apiResponse>('/api/addDoc', formData.toString())
+        return this.axiosService.post<apiResponse>('/addDoc', formData.toString())
         .pipe(
             map((data: apiResponse) => {
                 console.log(data);
@@ -150,7 +150,7 @@ export class UserService  {
     getDocuments():Observable<DocForm[]>
     {
         console.log("enter service  get documents");
-        return this.axiosService.get<DocForm[]>('/api/documents')
+        return this.axiosService.get<DocForm[]>('/documents')
         .pipe(
             map((data: DocForm[]) => {
                 console.log(data);
@@ -173,7 +173,7 @@ export class UserService  {
     {
         const formData = new URLSearchParams();
         this.fillDataReq(formData, formObj);
-        return this.axiosService.post<apiResponse>('/api/addReq', formData.toString())
+        return this.axiosService.post<apiResponse>('/addReq', formData.toString())
         .pipe(
             map((data: apiResponse) => {
                 console.log(data);
@@ -194,7 +194,7 @@ export class UserService  {
     getRequests():Observable<ReqForm[]>
     {
         console.log("==> Enter service  get requests");
-        return this.axiosService.get<ReqForm[]>('/api/requests')
+        return this.axiosService.get<ReqForm[]>('/requests')
         .pipe(
             map((data: ReqForm[]) => {
                 console.log(data);
@@ -224,7 +224,7 @@ export class UserService  {
             const [key, value] = pair;
             console.log(`Parameter: ${key}, Value: ${value}`);
         }
-        return this.axiosService.post<Contact>('/api/contacts', formData.toString())
+        return this.axiosService.post<Contact>('/contacts', formData.toString())
         .pipe(
             map((data: Contact) => {
                 console.log(data);
@@ -249,7 +249,7 @@ export class UserService  {
         const entriesArray = Array.from(formData.entries());
         console.log(entriesArray);
         console.log("after view formdata");
-        return this.axiosService.delete<apiResponse>('/api/documents', formData.toString())
+        return this.axiosService.delete<apiResponse>('/documents', formData.toString())
         .pipe(
             map((data: apiResponse) => {
                 console.log(data);
@@ -278,7 +278,7 @@ export class UserService  {
         console.log(entriesArray);
         console.log("after view formdata");
 
-        return this.axiosService.update<apiResponse>('/api/documents/'+id_doc, formData.toString())
+        return this.axiosService.update<apiResponse>('/documents/'+id_doc, formData.toString())
         .pipe(
             map((data: apiResponse) => {
                 console.log(data);
@@ -305,7 +305,7 @@ export class UserService  {
         const entriesArray = Array.from(formData.entries());
         console.log(entriesArray);
         console.log("after view formdata");
-        return this.axiosService.delete<apiResponse>('/api/requests', formData.toString())
+        return this.axiosService.delete<apiResponse>('/requests', formData.toString())
         .pipe(
             map((data: apiResponse) => {
                 console.log(data);
@@ -335,7 +335,7 @@ export class UserService  {
         console.log(entriesArray);
         console.log("after view formdata");
 
-        return this.axiosService.update<apiResponse>('/api/requests/'+id_req, formData.toString())
+        return this.axiosService.update<apiResponse>('/requests/'+id_req, formData.toString())
         .pipe(
             map((data: apiResponse) => {
                 console.log(data);
@@ -363,7 +363,7 @@ export class UserService  {
             const [key, value] = pair;
             console.log(`Parameter: ${key}, Value: ${value}`);
         }
-        return this.axiosService.post<apiResponse>('/api/documents/description', formData.toString())
+        return this.axiosService.post<apiResponse>('/documents/description', formData.toString())
         .pipe(
             map((data: apiResponse) => {
                 console.log(data);
