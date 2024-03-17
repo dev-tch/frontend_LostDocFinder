@@ -5,6 +5,6 @@ this is the user graphical interface developed with angular 17.2.0.
 
 - data-models: contains the models data to map the response of api back
 
-- storage-services: contains classes to save and extract data of athenticated users (like token)
+- storage-services: contains classes to save and extract data of authenticated users (like token)
 
 - htt-services : contains the sharable and injectable service to intercat with backend api 
