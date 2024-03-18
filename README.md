@@ -10,7 +10,9 @@ this is the user graphical interface developed with angular 17.2.0.
 - src/app/htt-services : contains the sharable and injectable service to intercat with backend api 
 
 # modified files
-src/app/app.routes.ts: contains all the routes of angular application
+- src/app/app.routes.ts: contains all the routes of angular application
+
+- src/environments/environment.ts: config the apiUrl
 
 # entry component
 - src/app.component.ts: the logic of the entry component
