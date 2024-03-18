@@ -13,7 +13,10 @@ this is the user graphical interface developed with angular 17.2.0.
 src/app/app.routes.ts: contains all the routes of angular application
 
 # entry component
-src/app.component.ts: the logic of the entry component
-src/app.component.html: template of entry component
-src/app.component.css: the design of entry component
+- src/app.component.ts: the logic of the entry component
+
+- src/app.component.html: template of entry component
+
+- src/app.component.css: the design of entry component
+
 
