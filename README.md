@@ -1,6 +1,6 @@
-# LostDocFinder
+## LostDocFinder
 this is the user graphical interface developed with angular 17.2.0.
-# folders 
+## folders 
 - src/app/web-pages : contains all the components used in this application
 
 - src/app/data-models: contains the models data to map the response of api back
@@ -9,12 +9,12 @@ this is the user graphical interface developed with angular 17.2.0.
 
 - src/app/htt-services : contains the sharable and injectable service to intercat with backend api 
 
-# modified files
+## modified files
 - src/app/app.routes.ts: contains all the routes of angular application
 
 - src/environments/environment.ts: config the apiUrl
 
-# entry component
+## entry component
 - src/app.component.ts: the logic of the entry component
 
 - src/app.component.html: template of entry component
