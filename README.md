@@ -1,4 +1,4 @@
-## LostDocFinder
+## frontend_LostDocFinder
 this is the user graphical interface developed with angular 17.2.0.
 ## folders 
 - src/app/web-pages : contains all the components used in this application
