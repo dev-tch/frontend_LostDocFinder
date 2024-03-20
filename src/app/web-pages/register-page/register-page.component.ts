@@ -5,6 +5,7 @@ import { UserService } from '../../http-services/user.service';
 import { RouterOutlet } from '@angular/router';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { RegisterForm } from '../../data-models/form.model';
+import { apiResponse } from '../../data-models/form.model';
 import {OnInit} from '@angular/core';
 @Component({
   selector: 'app-register',
@@ -16,8 +17,11 @@ import {OnInit} from '@angular/core';
 })
 
 export class RegisterPageComponent implements OnInit {
-    isRegisteredComp :Signal<boolean> ;
+    /*fields of class*/
+    serverResponse:apiResponse = {message: '', error: ''} ; //map the response backend api
+
     isSavingSigComp: Signal<boolean> ;
+
     form: FormGroup = new FormGroup
     (
         {
@@ -31,11 +35,10 @@ export class RegisterPageComponent implements OnInit {
     constructor(
         private formBuilder: FormBuilder,
         private userService: UserService,
-        private router: Router
-      ) {
-        this.isRegisteredComp = computed(() => userService.isRegistredSig() &&  true);
+        private router: Router) 
+    {
         this.isSavingSigComp = computed(() =>  userService.isSavingSig()    &&  true);
-      }
+    }
     ngOnInit(): void {
         this.form = this.formBuilder.group(
             {
@@ -88,18 +91,42 @@ export class RegisterPageComponent implements OnInit {
     } 
     onSubmit(): void 
     {
+        //empty object serverResponse on each click of button submit
+        this.serverResponse = {message: '', error: ''}
+        //don't call the backend api if form is not valid
         if (this.form.invalid ) {
             return;
         }
+        //set the signal isSavingSig to true to display 'loading content' instead of button submit
         this.userService.isSavingSig.set(true);
-        this.userService.postRegister(<RegisterForm>this.form.getRawValue());
-        this.isSavingSigComp = computed(() => {
-            console.log('Status Registered is: ' + this.userService.isRegistredSig());
-            if (this.userService.isRegistredSig() == true && !this.userService.isLoginSig()) {
-               this.router.navigate(['/login']);  
-               return true;    
-            }else
-                return false;
+
+        // call  api/users to create new user in database
+        this.userService.postRegister(<RegisterForm>this.form.getRawValue())
+        .subscribe
+        ({
+            next : data => {
+                if (data && data.error )
+                {
+                    this.serverResponse.error = data.error;
+                }
+                if (data && data.message)
+                {
+                    this.serverResponse.message = data.message;
+                    setTimeout(() => {
+                        // Show message 
+                        console.log(this.serverResponse.message);
+                        // Navigate to another route after timeout
+                        this.router.navigate(['/login']); 
+                      }, 3000);
+                }         
+            },
+            error: err  => 
+            {
+            },
+            complete: () => 
+            {
+                console.log("complete service signup")
+            }
         });
     } 
     onReset(): void 

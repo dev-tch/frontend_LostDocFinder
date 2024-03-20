@@ -7,7 +7,6 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatCardModule} from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatFormFieldModule} from '@angular/material/form-field';
-//import {FormControl,Validators} from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
 import {FormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -47,7 +46,6 @@ export class ViewDocumentPageComponent implements AfterViewInit , OnInit{
         this.userService.getDocuments().subscribe
         ({
             next : data => {
-                console.log("visua data");
                 this.documents =  data;
                 console.log(this.documents);
                 this.dataSource.data = this.documents;
@@ -57,7 +55,7 @@ export class ViewDocumentPageComponent implements AfterViewInit , OnInit{
             },
             complete: () => 
             {
-                console.log("complete service add document")
+                console.log("complete service getDocuments")
             }
         });
         this.form = this.fb.group({
@@ -66,10 +64,13 @@ export class ViewDocumentPageComponent implements AfterViewInit , OnInit{
     }
 
     deleteDocument(element: DocForm) {
+         //empty object serverResponse and clean variables
         this.serverResponse.error   = "";
         this.serverResponse.message = "";
         this.showinfo  = true;
         this.updatedoc = false;
+
+        //call backend api to delete document
         this.userService.deleteDocument(element)
         .subscribe
         ({
@@ -91,28 +92,37 @@ export class ViewDocumentPageComponent implements AfterViewInit , OnInit{
                 },
                 complete: () => 
                 {
-                    console.log("complete service delete service document");
+                    console.log("complete service deleteDocument");
                 }
             });
         console.log(element.doc_type);
     }
     updateDocdescription(element: DocForm) {
+        //empty object serverResponse
         this.serverResponse.error   = "";
         this.serverResponse.message = "";
         this.showinfo  = true;
         this.updatedoc = true;
+
         this.description = element.doc_description
-        this.id_doc   = element.doc_id
+        this.id_doc      = element.doc_id
         this.elementdata = element;
     }
 
     hideServerInfo()
     {
-        this.showinfo = false;
+        //this method called when click back button
+        //clean all variables
+        
+        this.serverResponse.error   = "";
+        this.serverResponse.message = "";
+        this.updatedoc              = false
+        this.showinfo               = false;
+
+        //call again service api/Documents to refresh the page
         this.userService.getDocuments().subscribe
         ({
             next : data => {
-                console.log("visua data documents");
                 this.documents =  data;
                 console.log(this.documents);
                 this.dataSource.data = this.documents;
@@ -122,7 +132,7 @@ export class ViewDocumentPageComponent implements AfterViewInit , OnInit{
             },
             complete: () => 
             {
-                console.log("complete service add document")
+                console.log("complete service getDocuments")
             }
         });
         this.form = this.fb.group({
@@ -135,11 +145,12 @@ export class ViewDocumentPageComponent implements AfterViewInit , OnInit{
         this.serverResponse.message = "";
         this.showinfo  = true;
         this.updatedoc = false;
+
+        //call backend api to update document description
         this.userService.updateDocument(this.form.value, this.id_doc )
         .subscribe
         ({
                 next : data => {    
-                console.log("data");
                 if (data && data.error )
                 {
                     this.serverResponse.error = data.error;
@@ -156,7 +167,7 @@ export class ViewDocumentPageComponent implements AfterViewInit , OnInit{
                 },
                 complete: () => 
                 {
-                    console.log("complete service delete service document");
+                    console.log("complete service updateDocument");
                 }
             });
 

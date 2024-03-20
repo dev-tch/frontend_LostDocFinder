@@ -2,7 +2,7 @@ import {AfterViewInit, Component, ViewChild, OnInit} from '@angular/core';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import { UserService } from '../../http-services/user.service';
-import { DocForm, ReqForm } from '../../data-models/form.model';
+import {ReqForm} from '../../data-models/form.model';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { Contact } from '../../data-models/form.model';
 import {MatCardModule} from '@angular/material/card';
@@ -27,7 +27,7 @@ export class ViewRequestPageComponent implements AfterViewInit , OnInit{
   requests: ReqForm[] = [];
   dataSource = new MatTableDataSource<ReqForm>();
   showInfo:boolean  = false;
-  public contact!:Contact;
+  public contact:Contact | null = null;;
   updatereq = false;
   description: string = "";
   doc_info: string = "";
@@ -46,9 +46,7 @@ export class ViewRequestPageComponent implements AfterViewInit , OnInit{
         this.userService.getRequests().subscribe
         ({
             next : data => {
-                console.log("visua data requests");
                 this.requests =  data;
-                console.log(this.requests);
                 this.dataSource.data = this.requests;
             },
             error: err  => 
@@ -56,7 +54,7 @@ export class ViewRequestPageComponent implements AfterViewInit , OnInit{
             },
             complete: () => 
             {
-                console.log("complete service view requests")
+                console.log("complete service getRequests")
             }
         });
         this.form = this.fb.group({
@@ -66,34 +64,49 @@ export class ViewRequestPageComponent implements AfterViewInit , OnInit{
 
     viewContact(element: ReqForm) {
         // Here you can access the data of the clicked row (element) and make necessary service call
-        
-      this.userService.getcontacts(element)
+        /*clean variables */
+        this.showInfo               = true ;
+        this.updatereq              = false;
+        this.serverResponse.error   = "";
+        this.serverResponse.message = "";
+        this.contact= null;
+        // call backend api to get the contact of other user 
+        this.userService.getcontacts(element)
         .subscribe
         ({
-             next : data => {
+                next : data => {
                 console.log(data);
                 this.contact = data; 
                 this.showInfo = true;          
-             },
-             error: err  => 
-             {
-             },
-             complete: () => 
-             {
-                 console.log("complete service add Request")
-             }
-         });
+                },
+                error: err  => 
+                {
+                },
+                complete: () => 
+                {
+                    console.log("complete service getcontacts")
+                    if (!this.contact)
+                    {
+                        this.serverResponse.error = "contact not found!!";
+                    }
+                }
+            });
         console.log(element.doc_type);
     }
     hideInfo()
     {
-        this.showInfo = false ;
+        //this method called when click back button
+        //clean variables
+        this.showInfo               = false ;
+        this.updatereq              = false;
+        this.serverResponse.error   = "";
+        this.serverResponse.message = "";
+        this.contact                = null;
+        //call again service api/requests to refresh the page
         this.userService.getRequests().subscribe
         ({
             next : data => {
-                console.log("visua data requests");
                 this.requests =  data;
-                console.log(this.requests);
                 this.dataSource.data = this.requests;
             },
             error: err  => 
@@ -101,7 +114,7 @@ export class ViewRequestPageComponent implements AfterViewInit , OnInit{
             },
             complete: () => 
             {
-                console.log("complete service view requests")
+                console.log("complete service getRequests")
             }
         });
         this.form = this.fb.group({
@@ -114,6 +127,8 @@ export class ViewRequestPageComponent implements AfterViewInit , OnInit{
         this.serverResponse.message = "";
         this.showInfo  = true;
         this.updatereq = false;
+        this.contact   = null;
+        // call backend api delete Document Request
         this.userService.deleteRequest(element)
         .subscribe
         ({
@@ -135,7 +150,7 @@ export class ViewRequestPageComponent implements AfterViewInit , OnInit{
                 },
                 complete: () => 
                 {
-                    console.log("complete service delete service document");
+                    console.log("complete service deleteRequest");
                 }
             });
     }
@@ -144,6 +159,7 @@ export class ViewRequestPageComponent implements AfterViewInit , OnInit{
         this.serverResponse.message = "";
         this.showInfo  = true;
         this.updatereq = true;
+        this.contact   = null;
         this.description = element.req_description
         this.id_req = element.id;
 
@@ -154,6 +170,8 @@ export class ViewRequestPageComponent implements AfterViewInit , OnInit{
         this.serverResponse.message = "";
         this.showInfo  = true;
         this.updatereq = false;
+        this.contact   = null;
+        // call backend api to update document Request description
         this.userService.updateRequest(this.form.value, this.id_req )
         .subscribe
         ({
@@ -175,7 +193,7 @@ export class ViewRequestPageComponent implements AfterViewInit , OnInit{
                 },
                 complete: () => 
                 {
-                    console.log("complete service update document request");
+                    console.log("complete service updateRequest");
                 }
             });
     }
@@ -185,6 +203,8 @@ export class ViewRequestPageComponent implements AfterViewInit , OnInit{
         this.serverResponse.message = "";
         this.showInfo  = true;
         this.updatereq = false ;
+        this.contact   = null;
+         // call backend api to get the description of document 
         this.userService.getDocInfo(element)
             .subscribe
             ({
@@ -203,7 +223,7 @@ export class ViewRequestPageComponent implements AfterViewInit , OnInit{
                 },
                 complete: () => 
                 {
-                    console.log("complete service add Request")
+                    console.log("complete service getDocInfo")
                 }
             });
     }

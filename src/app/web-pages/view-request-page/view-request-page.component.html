@@ -107,14 +107,14 @@
             }
             @if(this.contact)
             {
-            <p>email: {{this.contact.email}} <p>   
-            <p>phone: {{this.contact.phone}}</p>
-            <h2>Description: </h2>
-            <p> {{this.contact.description}}</p>
+                <p>email: {{this.contact.email}} <p>   
+                <p>phone: {{this.contact.phone}}</p>
+                <h2>Description: </h2>
+                <p> {{this.contact.description}}</p>
             }
             @if(this.serverResponse.message)
             {
-            <small class="text-success">{{this.serverResponse.message}}</small>
+                <small class="text-success">{{this.serverResponse.message}}</small>
            
             }
             @if(this.serverResponse.error){

@@ -119,4 +119,12 @@
         }
     </button>
 </form>
+@if(this.serverResponse.message)
+{
+    <small class="text-success">{{this.serverResponse.message}}</small>          
+}
+@if(this.serverResponse.error)
+{
+    <small class="text-danger">{{this.serverResponse.error}}</small>
+}
 
